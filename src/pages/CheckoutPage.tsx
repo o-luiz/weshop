@@ -1,7 +1,7 @@
-import React from "react";
+import { Container } from "@/components/layout/Container";
 
 function CheckoutPage() {
-  return <div>CheckoutPage</div>;
+  return <Container />;
 }
 
 export { CheckoutPage };
