@@ -1,30 +1,37 @@
-# React + TypeScript + Vite
+### Desafio técnico DTI - 18/07/2024
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é um mini webapp contendo a feature de checkout de ecommerce, desenvolvido utilizando React, TypeScript, Tailwind CSS e Shadcn UI. O destaque deste projeto é a funcionalidade de cupons de desconto, que permite aos usuários aplicar códigos percentuais de desconto durante o processo de checkout.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Checkout Rápido:** Interface intuitiva para realizar o checkout de produtos.
+- **Cupons de Desconto:** Permite aos usuários inserir e aplicar percentuais de desconto.
+- **Design Responsivo:** Desenvolvido com Tailwind CSS para garantir uma ótima experiência em dispositivos móveis e desktop.
+- **Componentes Reutilizáveis:** Utiliza Shadcn UI para uma construção eficiente e consistente da UI.
 
-## Expanding the ESLint configuration
+## Tecnologias Utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **React:** Biblioteca JavaScript para construir interfaces de usuário.
+- **TypeScript:** Superset do JavaScript que adiciona tipagem estática.
+- **Tailwind CSS:** Framework CSS para estilos rápidos e personalizados.
+- **Shadcn UI:** Biblioteca de componentes UI para uma construção de interface moderna e acessível.
 
-- Configure the top-level `parserOptions` property like this:
+## Instalação
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/o-luiz/weshop.git
+   ```
+2. Navegue até o diretório do projeto:
+   ```bash
+   cd weshop
+   ```
+3. Instale as dependências:
+   ```bash
+   npm install
+   ```
+4. Inicie o projeto:
+   ```bash
+   npm run dev
+   ```
+5. Acesse o aplicativo em `http://localhost:5173`.
