@@ -50,10 +50,15 @@ type ShoppingCartActions =
       productId: number;
     };
 
-function shoppingCartReducer(state: ShoppingCart, action: ShoppingCartActions) {
+function shoppingCartReducer(
+  state: ShoppingCart = SHOPPING_CART_INITIAL_STATE,
+  action: ShoppingCartActions
+) {
   switch (action.type) {
     case ShoppingCartActionTypes.DISCOUNT_CHANGED:
-      const discountPercentage = clamp(action.discountPercentage, 0, 100);
+      let discountPercentage = isNaN(action.discountPercentage)
+        ? 0
+        : clamp(action.discountPercentage, 0, 100);
 
       // TODO: validate discountPercentage and calculate subtotal and total
       return {
@@ -66,6 +71,8 @@ function shoppingCartReducer(state: ShoppingCart, action: ShoppingCartActions) {
         items: state.items.filter((item) => item.id !== action.productId),
       };
     case ShoppingCartActionTypes.ITEM_QTY_INCREASED:
+      console.log("ITEM_QTY_INCREASED", action);
+
       return {
         ...state,
         items: state.items.map((item) =>
@@ -75,11 +82,12 @@ function shoppingCartReducer(state: ShoppingCart, action: ShoppingCartActions) {
         ),
       };
     case ShoppingCartActionTypes.ITEM_QTY_DECREASED:
+      console.log("ITEM_QTY_DECREASED", action, state);
       return {
         ...state,
         items: state.items.map((item) => {
           if (item.id != action.productId) return item;
-
+          console.log("item", item);
           return {
             ...item,
             quantity: Math.min(1, item.quantity - 1),
@@ -92,12 +100,17 @@ function shoppingCartReducer(state: ShoppingCart, action: ShoppingCartActions) {
   }
 }
 
+function shoppingCartReducerInitFn(state: ShoppingCart) {
+  return state;
+}
+
 const ShoppingCartProvider = ({ children }: { children: React.ReactNode }) => {
   // const [cart, setCart] = useState<any>([]);
 
   const [cart, dispatch] = useReducer(
     shoppingCartReducer,
-    SHOPPING_CART_INITIAL_STATE
+    SHOPPING_CART_INITIAL_STATE,
+    shoppingCartReducerInitFn
   );
 
   function handleDiscountPercentageChange(discountPercentage: number) {
@@ -115,6 +128,7 @@ const ShoppingCartProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function handleItemQuantityIncrease(productId: number) {
+    console.log("handleItemQuantityIncrease", productId);
     dispatch({
       type: ShoppingCartActionTypes.ITEM_QTY_INCREASED,
       productId,
@@ -122,6 +136,7 @@ const ShoppingCartProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function handleItemQuantityDecrease(productId: number) {
+    console.log("handleItemQuantityDecrease", productId);
     dispatch({
       type: ShoppingCartActionTypes.ITEM_QTY_DECREASED,
       productId,

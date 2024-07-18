@@ -34,7 +34,13 @@ function ShoppingCartList() {
     },
   ]);
 
-  const { discountPercentage, subtotal, total } = useShoppingCartContext();
+  const {
+    discountPercentage,
+    subtotal,
+    total,
+    handleItemQuantityDecrease,
+    handleItemQuantityIncrease,
+  } = useShoppingCartContext();
 
   //const [discountPercentage, setDiscountPercentage] = useState(12);
   const discount = 12;
@@ -93,12 +99,17 @@ function ShoppingCartList() {
                 variant="solid"
                 size="small"
                 disabled={item.quantity == 1}
+                onClick={() => handleItemQuantityDecrease(item.id!)}
               >
                 <MinusIcon className="h-3 w-3" />
                 <span className="sr-only">Decrease quantity</span>
               </Button>
               <span className="text-sm">{item.quantity}</span>
-              <Button variant="ghost" size="smal">
+              <Button
+                variant="ghost"
+                size="smal"
+                onClick={() => handleItemQuantityIncrease(item.id!)}
+              >
                 <PlusIcon className="h-3 w-3" />
                 <span className="sr-only">Increase quantity</span>
               </Button>

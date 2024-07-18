@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { useState } from "react";
+import { clamp } from "../../lib/math";
 
 function handleDiscountChange(event: React.ChangeEvent<HTMLInputElement>) {
   console.log(event.target.value);
@@ -14,7 +16,22 @@ function handleApplyDiscount() {
 }
 
 function OrderSummary() {
-  const { discountPercentage, subtotal, total } = useShoppingCartContext();
+  const {
+    discountPercentage,
+    subtotal,
+    total,
+    handleDiscountPercentageChange,
+  } = useShoppingCartContext();
+
+  const [discountValue, setDiscountValue] = useState(() => discountPercentage);
+
+  const handleChangeDiscountValue = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let value = parseFloat(event.target.value);
+    setDiscountValue(clamp(value, 0, 100));
+    console.log("Value Changed", discountValue);
+  };
 
   return (
     // <div className="grid gap-6 bg-green-300/0">
@@ -33,12 +50,12 @@ function OrderSummary() {
               type="number"
               min="0"
               max="100"
-              placeholder="Enter discount percentage"
-              value={discountPercentage}
-              onChange={handleDiscountChange}
+              placeholder="13"
+              value={discountValue}
+              onChange={handleChangeDiscountValue}
             />
             <Button
-              onClick={handleApplyDiscount}
+              onClick={() => handleDiscountPercentageChange(discountValue)}
               className="bg-green-600 hover:bg-green-700"
             >
               Aplicar desconto
