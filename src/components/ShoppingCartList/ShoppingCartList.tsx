@@ -4,6 +4,7 @@ import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
 import { CartItem, Product } from "@/types";
+import { useShoppingCartContext } from "@/contexts/ShoppingCartContext";
 
 function ShoppingCartList() {
   const [cartItems, setCartItems] = useState<Partial<CartItem>[]>([
@@ -33,10 +34,12 @@ function ShoppingCartList() {
     },
   ]);
 
-  const [discountPercentage, setDiscountPercentage] = useState(12);
+  const { discountPercentage, subtotal, total } = useShoppingCartContext();
+
+  //const [discountPercentage, setDiscountPercentage] = useState(12);
   const discount = 12;
-  const subtotal = 100;
-  const total = 120;
+  // const subtotal = 100;
+  //const total = 120;
 
   return (
     <div className="border rounded-lg overflow-hidden w-full lg:max-w-80% md:max-w-full bg-white">

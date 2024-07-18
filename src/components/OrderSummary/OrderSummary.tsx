@@ -1,13 +1,9 @@
+import { useShoppingCartContext } from "@/contexts/ShoppingCartContext";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
-
-const discountPercentage = 12;
-const discount = 12;
-const subtotal = 100;
-const total = 120;
 
 function handleDiscountChange(event: React.ChangeEvent<HTMLInputElement>) {
   console.log(event.target.value);
@@ -18,6 +14,8 @@ function handleApplyDiscount() {
 }
 
 function OrderSummary() {
+  const { discountPercentage, subtotal, total } = useShoppingCartContext();
+
   return (
     // <div className="grid gap-6 bg-green-300/0">
     <Card className="min-w-[200px] shadow-md">
@@ -56,21 +54,20 @@ function OrderSummary() {
         <div className="grid gap-1">
           <div className="flex items-center justify-between">
             <span className="text-gray-400 text-sm">Subtotal</span>
-            <span className="">${subtotal?.toFixed(2)}</span>
+            <span className="">R$ {subtotal?.toFixed(2)}</span>
           </div>
           <div className="flex items-center justify-between mb-4 text-gray-400">
             <span className="text-sm">
-              Discount ({discountPercentage}
+              Desconto ({discountPercentage}
               %)
             </span>
             <span className="font text-green-600">
-              -$
-              {discount?.toFixed(2)}
+              -R$ {discountPercentage?.toFixed(2)}
             </span>
           </div>
           <div className="flex items-center justify-between font-semibold">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>R$ {total.toFixed(2)}</span>
           </div>
         </div>
       </CardContent>
