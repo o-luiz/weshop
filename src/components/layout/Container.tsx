@@ -1,4 +1,3 @@
-import React from "react";
 import { OrderSummary } from "../OrderSummary/OrderSummary";
 import { ShoppingCartList } from "../ShoppingCartList/ShoppingCartList";
 

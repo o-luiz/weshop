@@ -1,39 +1,11 @@
-import { useState } from "react";
 import { Button } from "../ui/button";
 import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
-import { CartItem, Product } from "@/types";
+
 import { useShoppingCartContext } from "@/contexts/ShoppingCartContext";
 
 function ShoppingCartList() {
-  /*const [cartItems, setCartItems] = useState<Partial<CartItem>[]>([
-    {
-      id: 1,
-      name: "Acme Circles T-Shirt",
-      description: "60% combed ringspun cotton",
-      price: 100099,
-      quantity: 2,
-      image: "https://via.placeholder.com/150/d32776",
-    },
-    {
-      id: 2,
-      name: "Sunset Beach Shorts",
-      description: "Quick-Dry Swim Shorts",
-      price: 34.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/150/d32776",
-    },
-    {
-      id: 3,
-      name: "Sunset Beach Towel",
-      description: "Absorbent Cotton Towel",
-      price: 19.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/150/d32776",
-    },
-  ]);*/
-
   const {
     discountPercentage,
     items: cartItems,
@@ -43,11 +15,6 @@ function ShoppingCartList() {
     handleItemQuantityIncrease,
     handleRemoveItem,
   } = useShoppingCartContext();
-
-  //const [discountPercentage, setDiscountPercentage] = useState(12);
-  const discount = 12;
-  // const subtotal = 100;
-  //const total = 120;
 
   return (
     <div className="border rounded-lg overflow-hidden w-full lg:max-w-80% md:max-w-full bg-white">
