@@ -7,7 +7,7 @@ import { CartItem, Product } from "@/types";
 import { useShoppingCartContext } from "@/contexts/ShoppingCartContext";
 
 function ShoppingCartList() {
-  const [cartItems, setCartItems] = useState<Partial<CartItem>[]>([
+  /*const [cartItems, setCartItems] = useState<Partial<CartItem>[]>([
     {
       id: 1,
       name: "Acme Circles T-Shirt",
@@ -32,14 +32,16 @@ function ShoppingCartList() {
       quantity: 1,
       image: "https://via.placeholder.com/150/d32776",
     },
-  ]);
+  ]);*/
 
   const {
     discountPercentage,
+    items: cartItems,
     subtotal,
     total,
     handleItemQuantityDecrease,
     handleItemQuantityIncrease,
+    handleRemoveItem,
   } = useShoppingCartContext();
 
   //const [discountPercentage, setDiscountPercentage] = useState(12);
@@ -59,9 +61,7 @@ function ShoppingCartList() {
             className="grid md:grid-cols-[80px_1fr_80px_100px_48px]  items-center gap-3 md:gap-6"
           >
             <img
-              src={
-                "https://m.media-amazon.com/images/I/61j3SEUjMJL._AC_SY450_.jpg"
-              }
+              src={item.image}
               alt="Product Image"
               width={80}
               height={80}
@@ -77,13 +77,13 @@ function ShoppingCartList() {
                 <div className="flex justify-end">
                   <div className="flex flex-row items-center gap-2">
                     <span className="flex gap-2 items-center ml-2">
-                      $
+                      R$
                       {(item.price * (1 - discountPercentage / 100)).toFixed(2)}
                     </span>
                     {discountPercentage != 0 ? (
                       <>
                         <span className="text-xs text-gray-400 line-through">
-                          ${item.price?.toFixed(2)}
+                          R${item.price?.toFixed(2)}
                         </span>
                         <span className="rounded-xl bg-green-200 font-white text-[10px] font-medium text-green-800 px-1.5 py-0.25 -ml-1">
                           -{discountPercentage}%
@@ -119,7 +119,7 @@ function ShoppingCartList() {
                 Subtotal:
               </span>
               <span className="">
-                $
+                R${" "}
                 {(
                   item.quantity *
                   item.price *
@@ -143,11 +143,12 @@ function ShoppingCartList() {
                   <div className="text-gray-500 text-sm mb-4">
                     Tem certeza que deseja remover esse item do seu carrinho?
                   </div>
-                  <div className="flex gap-2 justify-between text-sm">
-                    <Button variant="outline" className="py-1 px-3 h-fit">
-                      Cancelar
-                    </Button>
-                    <Button variant="destructive" className="py-1 px-3 h-fit">
+                  <div className="flex gap-2 justify-end text-sm">
+                    <Button
+                      variant="destructive"
+                      className="py-1 px-3 h-fit"
+                      onClick={() => handleRemoveItem(item.id!)}
+                    >
                       Remover
                     </Button>
                   </div>
@@ -155,7 +156,6 @@ function ShoppingCartList() {
               </Popover>
             </div>
             <Separator className="w-full md:hidden mb-4" />
-            {/* <span className="sr-only">Remove</span> */}
           </div>
         ))}
       </div>

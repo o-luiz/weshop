@@ -8,10 +8,3 @@ export function clamp(value: number, min: number, max: number) {
   if (value >= max) return max;
   return value;
 }
-
-export function calculatePriceWithDiscount(
-  price: number,
-  discount: number
-): number {
-  return price * (1 - discount);
-}

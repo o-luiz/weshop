@@ -6,20 +6,18 @@ import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
 import { clamp } from "../../lib/math";
-
-function handleDiscountChange(event: React.ChangeEvent<HTMLInputElement>) {
-  console.log(event.target.value);
-}
-
-function handleApplyDiscount() {
-  console.log("apply discount");
-}
+import { calculateShoppingCartSubtotal } from "../../lib/shoppingCartUtils";
+import {
+  calculatePriceWithDiscount,
+  calculateTotalWithDiscountPerItem,
+} from "@/lib/shoppingCartUtils";
 
 function OrderSummary() {
   const {
     discountPercentage,
     subtotal,
     total,
+    items,
     handleDiscountPercentageChange,
   } = useShoppingCartContext();
 
@@ -30,11 +28,9 @@ function OrderSummary() {
   ) => {
     let value = parseFloat(event.target.value);
     setDiscountValue(clamp(value, 0, 100));
-    console.log("Value Changed", discountValue);
   };
 
   return (
-    // <div className="grid gap-6 bg-green-300/0">
     <Card className="min-w-[200px] shadow-md">
       <CardHeader className="pb-3">
         <CardTitle className="text-xl">Cupom de desconto</CardTitle>
@@ -71,7 +67,9 @@ function OrderSummary() {
         <div className="grid gap-1">
           <div className="flex items-center justify-between">
             <span className="text-gray-400 text-sm">Subtotal</span>
-            <span className="">R$ {subtotal?.toFixed(2)}</span>
+            <span className="">
+              R$ {calculatePriceWithDiscount(subtotal, 0).toFixed(2)}
+            </span>
           </div>
           <div className="flex items-center justify-between mb-4 text-gray-400">
             <span className="text-sm">
@@ -79,17 +77,22 @@ function OrderSummary() {
               %)
             </span>
             <span className="font text-green-600">
-              -R$ {discountPercentage?.toFixed(2)}
+              -R$ {((subtotal * discountPercentage) / 100).toFixed(2)}
             </span>
           </div>
           <div className="flex items-center justify-between font-semibold">
             <span>Total</span>
-            <span>R$ {total.toFixed(2)}</span>
+            <span>
+              R${" "}
+              {calculatePriceWithDiscount(
+                calculateShoppingCartSubtotal(items),
+                discountPercentage
+              )?.toFixed(2)}
+            </span>
           </div>
         </div>
       </CardContent>
     </Card>
-    // </div>
   );
 }
 

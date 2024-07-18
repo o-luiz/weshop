@@ -1,5 +1,15 @@
 import { clamp } from "@/lib/math";
-import { CartItem } from "@/types";
+import {
+  calculateOrderTotals,
+  calculatePriceWithDiscount,
+  calculateShoppingCartSubtotal,
+  calculateTotalWithDiscountPerItem,
+  createShoppingCartItem,
+} from "@/lib/shoppingCartUtils";
+import { getProducts } from "@/services/getProducts";
+import { CartItem, Product } from "@/types";
+import { stat } from "fs";
+import { get } from "http";
 import { useContext, useState, createContext, useReducer } from "react";
 
 type ShoppingCart = {
@@ -11,9 +21,9 @@ type ShoppingCart = {
 
 const SHOPPING_CART_INITIAL_STATE: ShoppingCart = {
   items: [],
-  discountPercentage: 5,
-  subtotal: 1220,
-  total: 87,
+  discountPercentage: 15,
+  subtotal: 0,
+  total: 0,
 };
 
 type ShoppingCartContextData = ShoppingCart & {
@@ -55,45 +65,79 @@ function shoppingCartReducer(
   action: ShoppingCartActions
 ) {
   switch (action.type) {
-    case ShoppingCartActionTypes.DISCOUNT_CHANGED:
+    case ShoppingCartActionTypes.DISCOUNT_CHANGED: {
       let discountPercentage = isNaN(action.discountPercentage)
         ? 0
         : clamp(action.discountPercentage, 0, 100);
 
+      const subtotal = calculateShoppingCartSubtotal(state.items);
+
+      const { total } = calculateOrderTotals(state.items, discountPercentage);
+
       // TODO: validate discountPercentage and calculate subtotal and total
       return {
         ...state,
+        subtotal,
+        total,
         discountPercentage,
       };
-    case ShoppingCartActionTypes.ITEM_REMOVED:
-      return {
-        ...state,
-        items: state.items.filter((item) => item.id !== action.productId),
-      };
-    case ShoppingCartActionTypes.ITEM_QTY_INCREASED:
-      console.log("ITEM_QTY_INCREASED", action);
+    }
+    case ShoppingCartActionTypes.ITEM_REMOVED: {
+      const items = state.items.filter((item) => item.id !== action.productId);
+      const { total } = calculateOrderTotals(items, state.discountPercentage);
+
+      const subtotal = calculateShoppingCartSubtotal(items);
 
       return {
         ...state,
-        items: state.items.map((item) =>
-          item.id === action.productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        ),
+        items,
+        subtotal,
+        total,
       };
-    case ShoppingCartActionTypes.ITEM_QTY_DECREASED:
-      console.log("ITEM_QTY_DECREASED", action, state);
+    }
+    case ShoppingCartActionTypes.ITEM_QTY_INCREASED: {
+      const items = state.items.map((item) =>
+        item.id === action.productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+      const { total, subtotal } = calculateOrderTotals(
+        items,
+        state.discountPercentage
+      );
+
+      //const subtotal = calculateShoppingCartSubtotal(items);
+
       return {
         ...state,
-        items: state.items.map((item) => {
-          if (item.id != action.productId) return item;
-          console.log("item", item);
-          return {
-            ...item,
-            quantity: Math.min(1, item.quantity - 1),
-          };
-        }),
+        items,
+        subtotal,
+        total,
       };
+    }
+    case ShoppingCartActionTypes.ITEM_QTY_DECREASED: {
+      const items = state.items.map((item) => {
+        if (item.id != action.productId) return item;
+        return {
+          ...item,
+          quantity: Math.max(1, item.quantity - 1),
+        };
+      });
+
+      const { total, subtotal } = calculateOrderTotals(
+        items,
+        state.discountPercentage
+      );
+
+      // const subtotal = calculateShoppingCartSubtotal(items);
+
+      return {
+        ...state,
+        total,
+        subtotal,
+        items,
+      };
+    }
 
     default:
       return state;
@@ -101,12 +145,36 @@ function shoppingCartReducer(
 }
 
 function shoppingCartReducerInitFn(state: ShoppingCart) {
-  return state;
+  const products = getProducts().map((product) =>
+    createShoppingCartItem(product, state.discountPercentage)
+  );
+
+  const subtotal = calculateShoppingCartSubtotal(products);
+  const subtotalWithFlatDiscount = calculatePriceWithDiscount(
+    subtotal,
+    state.discountPercentage
+  );
+
+  const subtotalWithDiscountPerItem =
+    calculateTotalWithDiscountPerItem(products);
+
+  const difference = subtotalWithFlatDiscount - subtotalWithDiscountPerItem;
+
+  /*console.log("subtotalWithFlatDiscount", subtotalWithFlatDiscount);
+  console.log("subtotalWithDiscountPerItem", subtotalWithDiscountPerItem);
+  console.log("difference", difference);
+
+  console.log("products", products, subtotal, subtotalWithFlatDiscount);*/
+
+  return {
+    ...state,
+    items: products,
+    subtotal,
+    total: subtotalWithFlatDiscount,
+  };
 }
 
 const ShoppingCartProvider = ({ children }: { children: React.ReactNode }) => {
-  // const [cart, setCart] = useState<any>([]);
-
   const [cart, dispatch] = useReducer(
     shoppingCartReducer,
     SHOPPING_CART_INITIAL_STATE,
@@ -128,7 +196,6 @@ const ShoppingCartProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function handleItemQuantityIncrease(productId: number) {
-    console.log("handleItemQuantityIncrease", productId);
     dispatch({
       type: ShoppingCartActionTypes.ITEM_QTY_INCREASED,
       productId,
@@ -136,7 +203,6 @@ const ShoppingCartProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function handleItemQuantityDecrease(productId: number) {
-    console.log("handleItemQuantityDecrease", productId);
     dispatch({
       type: ShoppingCartActionTypes.ITEM_QTY_DECREASED,
       productId,
